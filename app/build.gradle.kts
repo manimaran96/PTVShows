@@ -1,9 +1,15 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.dagger.hilt.android")
     id("com.google.devtools.ksp")
 }
+
+// Load local.properties values
+val properties = Properties()
+properties.load(rootProject.file("local.properties").inputStream())
 
 android {
     namespace = "com.manimarank.ptvshows"
@@ -20,6 +26,12 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        // Setup API KEY value
+        buildConfigField("String","API_KEY", properties.getProperty("API_KEY"))
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {

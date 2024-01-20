@@ -1,5 +1,6 @@
 package com.manimarank.ptvshows.data.remote
 
+import com.manimarank.ptvshows.BuildConfig
 import com.manimarank.ptvshows.data.remote.dto.TvSeriesListDto
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -18,6 +19,6 @@ interface TvSeriesApi {
     companion object {
         const val baseUrl = "https://api.themoviedb.org/3/"
         const val imageBaseUrl = "https://image.tmdb.org/t/p/w500"
-        const val apiKey = "<API_KEY>"
+        const val apiKey = BuildConfig.API_KEY
     }
 }
