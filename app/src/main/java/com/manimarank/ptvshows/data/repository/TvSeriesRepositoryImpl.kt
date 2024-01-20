@@ -10,11 +10,12 @@ import com.manimarank.ptvshows.domain.repository.TvSeriesRepository
 import com.manimarank.ptvshows.util.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import javax.inject.Inject
 
 /**
  * Data level Repository Implementation for TV Series
  */
-class TvSeriesRepositoryImpl(
+class TvSeriesRepositoryImpl @Inject constructor(
     private val tvSeriesApi: TvSeriesApi,
     private val tvSeriesDatabase: TvSeriesDatabase
 ): TvSeriesRepository {
