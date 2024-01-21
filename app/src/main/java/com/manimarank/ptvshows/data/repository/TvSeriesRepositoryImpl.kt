@@ -69,8 +69,18 @@ class TvSeriesRepositoryImpl @Inject constructor(
 
             val tvSeriesEntity = tvSeriesDatabase.tvSeriesDao.getTvSeriesById(id)
 
-            if (tvSeriesEntity != null) {
-                emit(Resource.Success(tvSeriesEntity.toTvSeries()))
+            val tvSeriesFromApi = try {
+                tvSeriesApi.getTvSeriesDetails(id)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                emit(Resource.Error(message = e.toDisplayError()))
+                return@flow
+            }
+
+            val tvSeries: TvSeries? =  (tvSeriesFromApi?.toTvSeriesEntity() ?: tvSeriesEntity)?.toTvSeries()
+
+            if (tvSeries != null) {
+                emit(Resource.Success(tvSeries))
                 emit(Resource.Loading(false))
                 return@flow
             }

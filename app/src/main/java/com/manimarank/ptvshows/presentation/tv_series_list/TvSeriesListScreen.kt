@@ -37,15 +37,9 @@ fun TvSeriesListScreen(
                 .fillMaxSize(),
         ) {
             when {
-                state.isLoading -> {
-                    AppLoader()
-                }
-                state.error != null -> {
-                    ErrorWidget(state.error)
-                }
-                state.tvSeriesList.isEmpty() -> {
-                    EmptyWidget()
-                }
+                state.isLoading -> AppLoader()
+                state.error != null -> ErrorWidget(state.error)
+                state.tvSeriesList.isEmpty() -> EmptyWidget()
                 else -> {
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(2),

@@ -13,14 +13,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.manimarank.ptvshows.presentation.tv_series_details.TvSeriesDetailsScreen
 import com.manimarank.ptvshows.presentation.tv_series_list.TvSeriesListScreen
 import com.manimarank.ptvshows.ui.theme.PTVShowsTheme
+import com.manimarank.ptvshows.util.AppConstants
 import com.manimarank.ptvshows.util.Screen
 import dagger.hilt.android.AndroidEntryPoint
 
+/**
+ * App Main Activity
+ */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -85,6 +92,15 @@ fun PTVShowNavigation() {
             TvSeriesListScreen(
                 navController = navController,
             )
+        }
+
+        composable(
+            Screen.TvSeriesDetails.route + "/{${AppConstants.keyTvSeriesId}}",
+            arguments = listOf(
+                navArgument(AppConstants.keyTvSeriesId) { type = NavType.IntType }
+            )
+        ) {
+            TvSeriesDetailsScreen()
         }
     }
 }

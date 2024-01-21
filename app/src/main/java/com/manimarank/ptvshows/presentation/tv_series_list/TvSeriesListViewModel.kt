@@ -12,6 +12,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * View model for TV Series List
+ */
 @HiltViewModel
 class TvSeriesListViewModel @Inject constructor(
     private val tvSeriesRepository: TvSeriesRepository
