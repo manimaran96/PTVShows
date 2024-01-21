@@ -2,18 +2,21 @@ package com.manimarank.ptvshows
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.graphics.toArgb
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.manimarank.ptvshows.presentation.tv_series_list.TvSeriesListScreen
-import com.manimarank.ptvshows.presentation.tv_series_list.TvSeriesListViewModel
 import com.manimarank.ptvshows.ui.theme.PTVShowsTheme
 import com.manimarank.ptvshows.util.Screen
 import dagger.hilt.android.AndroidEntryPoint
@@ -22,15 +25,45 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContent {
             PTVShowsTheme {
-                val viewModel = hiltViewModel<TvSeriesListViewModel>()
+                CustomSystemBarsTheme(!isSystemInDarkTheme())
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
                     PTVShowNavigation()
                 }
+            }
+        }
+    }
+
+    /**
+     * Custom system bar theme
+     */
+    @Composable
+    private fun CustomSystemBarsTheme(lightTheme: Boolean) {
+        val barColor = MaterialTheme.colorScheme.background.toArgb()
+        LaunchedEffect(lightTheme) {
+            if (lightTheme) {
+                enableEdgeToEdge(
+                    statusBarStyle = SystemBarStyle.light(
+                        barColor, barColor,
+                    ),
+                    navigationBarStyle = SystemBarStyle.light(
+                        barColor, barColor,
+                    ),
+                )
+            } else {
+                enableEdgeToEdge(
+                    statusBarStyle = SystemBarStyle.dark(
+                        barColor,
+                    ),
+                    navigationBarStyle = SystemBarStyle.dark(
+                        barColor,
+                    ),
+                )
             }
         }
     }
