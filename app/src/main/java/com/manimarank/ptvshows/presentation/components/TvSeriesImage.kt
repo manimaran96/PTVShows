@@ -22,7 +22,7 @@ import coil.request.ImageRequest
 import coil.size.Size
 import com.manimarank.ptvshows.R
 import com.manimarank.ptvshows.data.remote.TvSeriesApi
-import com.manimarank.ptvshows.util.AppColors
+import com.manimarank.ptvshows.ui.theme.defaultImageBg
 import com.manimarank.ptvshows.util.ImageAspectRatio
 
 @Composable
@@ -59,7 +59,7 @@ fun TvSeriesImage(
                     .fillMaxWidth()
                     .aspectRatio(aspectRatio)
                     .clip(clipShape)
-                    .background(AppColors.defaultImageBg),
+                    .background(defaultImageBg),
                 contentAlignment = Alignment.Center
             ) {
                 Image(

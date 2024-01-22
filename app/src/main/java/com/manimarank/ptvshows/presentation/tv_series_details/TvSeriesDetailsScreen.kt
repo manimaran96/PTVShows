@@ -112,11 +112,13 @@ fun TvSeriesDetailsScreen() {
                             }
                         }
 
-                        Text(
-                            text = state.tvSeries.genres?.joinToString(" | ") ?: "",
-                            modifier = Modifier.padding(16.dp),
-                            fontSize = 16.sp,
-                        )
+                        if (state.tvSeries.genres?.isNotEmpty() == true)
+                            Text(
+                                text = state.tvSeries.genres.joinToString(" | "),
+                                modifier = Modifier.padding(16.dp),
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Light
+                            )
 
                         TvSeriesMoreDetails(state.tvSeries)
                     }
@@ -135,11 +137,13 @@ fun TvSeriesMoreDetails(tvSeries: TvSeries) {
     Column (
         modifier = Modifier.padding(horizontal = 16.dp),
     ) {
-        Text(
-            text = tvSeries.overview ?: "",
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Light
-        )
+
+        if (!tvSeries.overview.isNullOrEmpty())
+            Text(
+                text = tvSeries.overview,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Light
+            )
 
         val detailsMap: Map<String, String> = mapOf(
             stringResource(R.string.type) to (tvSeries.type ?: ""),

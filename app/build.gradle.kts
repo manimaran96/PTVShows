@@ -106,6 +106,10 @@ dependencies {
     ksp("androidx.hilt:hilt-compiler:$hiltComposeVersion")
     implementation("androidx.hilt:hilt-navigation-compose:$hiltComposeVersion")
 
+    // Splash screen
+    val splashScreenVersion = "1.0.1"
+    implementation("androidx.core:core-splashscreen:$splashScreenVersion")
+
     // Lottie
     val lottieVersion = "6.0.0"
     implementation("com.airbnb.android:lottie-compose:$lottieVersion")
