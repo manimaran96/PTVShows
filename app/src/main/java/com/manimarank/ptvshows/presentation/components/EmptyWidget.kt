@@ -31,14 +31,15 @@ fun EmptyWidget(message: String? = null) {
     ) {
         val composition by rememberLottieComposition(
             LottieCompositionSpec.RawRes(
-                R.raw.loader // TODO Update empty file
+                R.raw.no_records
             )
         )
 
         LottieAnimation(
             composition = composition,
             iterations = LottieConstants.IterateForever,
-            modifier = Modifier.height(150.dp)
+            modifier = Modifier.height(250.dp),
+            speed = 2f
         )
 
         Text(

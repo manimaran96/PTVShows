@@ -16,10 +16,11 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.manimarank.ptvshows.R
 
 /**
- * Component for Loading
+ * Component for Search screen ask lottie
  */
+
 @Composable
-fun AppLoader() {
+fun SearchAskWidget() {
     Column (
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -27,15 +28,15 @@ fun AppLoader() {
     ) {
         val composition by rememberLottieComposition(
             LottieCompositionSpec.RawRes(
-                R.raw.loader
+                R.raw.search_ask
             )
         )
 
         LottieAnimation(
             composition = composition,
             iterations = LottieConstants.IterateForever,
-            modifier = Modifier.height(150.dp),
-            speed = 3.0f
+            modifier = Modifier.height(130.dp),
+            speed = 1.0f
         )
     }
 }

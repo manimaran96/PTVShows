@@ -30,14 +30,15 @@ fun ErrorWidget(message: String? = null) {
     ) {
         val composition by rememberLottieComposition(
             LottieCompositionSpec.RawRes(
-                R.raw.loader // TODO Update error file
+                R.raw.error
             )
         )
 
         LottieAnimation(
             composition = composition,
             iterations = LottieConstants.IterateForever,
-            modifier = Modifier.height(150.dp)
+            modifier = Modifier.height(200.dp),
+            speed = 2.0f
         )
 
         Text(
