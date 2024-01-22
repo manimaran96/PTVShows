@@ -12,17 +12,20 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.manimarank.ptvshows.R
+import com.manimarank.ptvshows.domain.model.TvSeries
 import com.manimarank.ptvshows.presentation.components.AppLoader
 import com.manimarank.ptvshows.presentation.components.EmptyWidget
 import com.manimarank.ptvshows.presentation.components.ErrorWidget
@@ -30,6 +33,7 @@ import com.manimarank.ptvshows.presentation.components.RattingStats
 import com.manimarank.ptvshows.presentation.components.TvSeriesImage
 import com.manimarank.ptvshows.util.DateUtils
 import com.manimarank.ptvshows.util.ImageAspectRatio
+import com.manimarank.ptvshows.util.MovieContentRatting
 
 /**
  * TV Series Details Screen
@@ -69,7 +73,9 @@ fun TvSeriesDetailsScreen() {
 
                             state.tvSeries.let { tvSeries ->
                                 Column(
-                                    modifier = Modifier.fillMaxWidth().padding(start = 12.dp)
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 12.dp)
                                 ) {
                                     Text(
                                         text = tvSeries.name ?: "",
@@ -83,29 +89,81 @@ fun TvSeriesDetailsScreen() {
 
                                     Spacer(modifier = Modifier.height(8.dp))
 
-                                    Text(
-                                        text = stringResource(R.string.release_date) + DateUtils.displayDate(tvSeries.first_air_date)
-                                    )
+                                    if (!tvSeries.tagline.isNullOrBlank()) {
+                                        Text(
+                                            text = tvSeries.tagline,
+                                            fontSize = 14.sp,
+                                            fontStyle = FontStyle.Italic
+                                        )
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                    }
+
+                                    Text(text = DateUtils.displayDate(tvSeries.first_air_date))
 
                                     Spacer(modifier = Modifier.height(8.dp))
 
+                                    val movieContentRate = if(tvSeries.adult == false) MovieContentRatting.U else MovieContentRatting.UA
+                                    val seasonInfo = "${tvSeries.number_of_seasons ?: 0} ${stringResource(id = if ((tvSeries.number_of_seasons ?: 0) > 1) R.string.seasons else R.string.season)}"
+
                                     Text(
-                                        text = stringResource(R.string.language) + tvSeries.original_language
+                                        text =  "$movieContentRate | $seasonInfo",
                                     )
                                 }
                             }
                         }
 
                         Text(
+                            text = state.tvSeries.genres?.joinToString(" | ") ?: "",
                             modifier = Modifier.padding(16.dp),
-                            text = state.tvSeries.overview ?: "",
                             fontSize = 16.sp,
                         )
 
+                        TvSeriesMoreDetails(state.tvSeries)
                     }
                 }
             }
         }
     }
 
+}
+
+/**
+ * Component for TV Series More details
+ */
+@Composable
+fun TvSeriesMoreDetails(tvSeries: TvSeries) {
+    Column (
+        modifier = Modifier.padding(horizontal = 16.dp),
+    ) {
+        Text(
+            text = tvSeries.overview ?: "",
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Light
+        )
+
+        val detailsMap: Map<String, String> = mapOf(
+            stringResource(R.string.type) to (tvSeries.type ?: ""),
+            stringResource(R.string.original_name) to (tvSeries.original_name ?: ""),
+            stringResource(R.string.status) to (tvSeries.status ?: ""),
+            stringResource(R.string.languages) to (tvSeries.spoken_languages?.joinToString(", ") ?: ""),
+            stringResource(R.string.total_episodes) to (tvSeries.number_of_episodes?.toString() ?: ""),
+            stringResource(R.string.popularity) to (tvSeries.popularity?.toString() ?: ""),
+            stringResource(R.string.production_companies) to (tvSeries.production_companies?.joinToString(", ") ?: ""),
+            stringResource(R.string.networks) to (tvSeries.networks?.joinToString(", ") ?: ""),
+        ).filter { it.value.isNotEmpty() }
+
+        Column(
+            Modifier
+                .fillMaxSize()
+                .padding(vertical = 16.dp)) {
+            detailsMap.forEach {
+                Divider(thickness = 0.2.dp, modifier = Modifier.padding(vertical = 12.dp))
+                Row(Modifier.fillMaxWidth()) {
+                    Text(text = it.key, modifier = Modifier.weight(0.4f))
+                    Text(text = it.value, modifier = Modifier.weight(0.6f), fontWeight = FontWeight.SemiBold)
+                }
+            }
+            Divider(thickness = 0.2.dp, modifier = Modifier.padding(vertical = 12.dp))
+        }
+    }
 }

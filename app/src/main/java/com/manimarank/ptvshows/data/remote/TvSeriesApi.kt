@@ -24,7 +24,6 @@ interface TvSeriesApi {
         @Query("api_key") apiKey: String = Companion.apiKey,
     ): TvSeriesDto?
 
-
     @GET("search/tv")
     suspend fun searchTvSeries(
         @Query("query") query: String,
