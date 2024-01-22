@@ -18,6 +18,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.manimarank.ptvshows.presentation.search.TvSeriesSearchScreen
 import com.manimarank.ptvshows.presentation.tv_series_details.TvSeriesDetailsScreen
 import com.manimarank.ptvshows.presentation.tv_series_list.TvSeriesListScreen
 import com.manimarank.ptvshows.ui.theme.PTVShowsTheme
@@ -101,6 +102,12 @@ fun PTVShowNavigation() {
             )
         ) {
             TvSeriesDetailsScreen()
+        }
+
+        composable(Screen.TvSeriesSearch.route) {
+            TvSeriesSearchScreen(
+                navController = navController
+            )
         }
     }
 }

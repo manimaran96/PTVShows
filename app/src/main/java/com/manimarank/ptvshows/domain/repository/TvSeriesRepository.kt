@@ -14,4 +14,10 @@ interface TvSeriesRepository {
     ): Flow<Resource<List<TvSeries>>>
 
     suspend fun getTvSeries(id: Int): Flow<Resource<TvSeries>>
+
+    suspend fun searchTvSeries(
+        searchTerm: String,
+        forceFetchFromRemote: Boolean = false,
+        page: Int
+    ): Flow<Resource<List<TvSeries>>>
 }

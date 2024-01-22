@@ -19,4 +19,7 @@ interface TvSeriesDao {
 
     @Query("SELECT * FROM TvSeriesEntity WHERE id = :id")
     suspend fun getTvSeriesById(id: Int): TvSeriesEntity?
+
+    @Query("SELECT * FROM TvSeriesEntity WHERE name LIKE '%' || :searchTerm || '%'")
+    suspend fun filterTvSeries(searchTerm: String?): List<TvSeriesEntity>
 }

@@ -1,8 +1,11 @@
 <resources>
     <string name="app_name">PTVShows</string>
+    <string name="popular_tv_shows">Popular TV Shows</string>
     <string name="something_went_wrong">Something went wrong!</string>
     <string name="no_results_found">No results found</string>
 
     <string name="language">"Language: "</string>
     <string name="release_date">"Release Date: "</string>
+    <string name="search">Search</string>
+    <string name="search_here">Search here</string>
 </resources>

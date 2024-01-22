@@ -24,6 +24,14 @@ interface TvSeriesApi {
         @Query("api_key") apiKey: String = Companion.apiKey,
     ): TvSeriesDto?
 
+
+    @GET("search/tv")
+    suspend fun searchTvSeries(
+        @Query("query") query: String,
+        @Query("page") page: Int,
+        @Query("api_key") apiKey: String = Companion.apiKey,
+    ): TvSeriesListDto
+
     companion object {
         const val baseUrl = "https://api.themoviedb.org/3/"
         const val imageBaseUrl = "https://image.tmdb.org/t/p/w500"

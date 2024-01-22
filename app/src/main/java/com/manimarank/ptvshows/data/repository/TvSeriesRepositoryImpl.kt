@@ -89,4 +89,48 @@ class TvSeriesRepositoryImpl @Inject constructor(
             emit(Resource.Loading(false))
         }
     }
+
+    override suspend fun searchTvSeries(
+        searchTerm: String,
+        forceFetchFromRemote: Boolean,
+        page: Int
+    ): Flow<Resource<List<TvSeries>>> {
+        return flow {
+            emit(Resource.Loading(true))
+            val localTvSeriesList = tvSeriesDatabase.tvSeriesDao.filterTvSeries(searchTerm)
+            val shouldLoadFromLocal = localTvSeriesList.isNotEmpty() && !forceFetchFromRemote
+
+            if (shouldLoadFromLocal) {
+                emit(Resource.Success(
+                    data = localTvSeriesList.map { tvSeriesEntity ->
+                        tvSeriesEntity.toTvSeries()
+                    }
+                ))
+
+                emit(Resource.Loading(false))
+                return@flow
+            }
+
+            val tvSeriesListFromApi = try {
+                tvSeriesApi.searchTvSeries(searchTerm, page)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                emit(Resource.Error(message = e.toDisplayError()))
+                return@flow
+            }
+
+            val tvSeriesEntities = tvSeriesListFromApi.results?.filterNotNull()?.let {
+                it.map { tvSeriesDto ->
+                    tvSeriesDto.toTvSeriesEntity()
+                }
+            } ?: listOf()
+
+            tvSeriesDatabase.tvSeriesDao.upsertTvSeriesList(tvSeriesEntities)
+
+            emit(Resource.Success(
+                tvSeriesEntities.map { it.toTvSeries() }
+            ))
+            emit(Resource.Loading(false))
+        }
+    }
 }
