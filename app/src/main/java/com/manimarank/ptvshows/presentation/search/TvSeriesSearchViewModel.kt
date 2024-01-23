@@ -2,15 +2,15 @@ package com.manimarank.ptvshows.presentation.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.manimarank.ptvshows.domain.repository.TvSeriesRepository
+import com.manimarank.ptvshows.domain.use_case.TvSeriesSearchUseCase
 import com.manimarank.ptvshows.util.Resource
 import com.manimarank.ptvshows.util.getValidPage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -18,7 +18,7 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class TvSeriesSearchViewModel @Inject constructor(
-    private val tvSeriesRepository: TvSeriesRepository
+    private val tvSeriesSearchUseCase: TvSeriesSearchUseCase
 ) : ViewModel() {
 
     private var _state = MutableStateFlow(TvSeriesSearchState())
@@ -37,43 +37,37 @@ class TvSeriesSearchViewModel @Inject constructor(
 
         }
 
-        viewModelScope.launch {
-            tvSeriesRepository.searchTvSeries(
-                searchQuery,
-                forceFetchFromRemote,
-                _state.value.page
-            ).collectLatest { result ->
-                when (result) {
-                    is Resource.Error -> {
+        tvSeriesSearchUseCase(searchQuery, _state.value.page, forceFetchFromRemote = forceFetchFromRemote).onEach { result ->
+            when (result) {
+                is Resource.Error -> {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            error = result.message
+                        )
+                    }
+                }
+
+                is Resource.Success -> {
+                    result.data?.let { data ->
                         _state.update {
+                            val fullList = it.tvSeriesList + data.tvSeriesList
                             it.copy(
-                                isLoading = false,
-                                error = result.message
+                                tvSeriesList = fullList,
+                                page = fullList.getValidPage(it.page, data.totalPage ?: 0)
                             )
                         }
                     }
+                }
 
-                    is Resource.Success -> {
-                        result.data?.let { data ->
-                            _state.update {
-                                val fullList = it.tvSeriesList + data.tvSeriesList
-                                it.copy(
-                                    tvSeriesList = fullList,
-                                    page = fullList.getValidPage(it.page, data.totalPage ?: 0)
-                                )
-                            }
-                        }
-                    }
-
-                    is Resource.Loading -> {
-                        if (!loadMore)
+                is Resource.Loading -> {
+                    if (!loadMore)
                         _state.update {
                             it.copy(isLoading = result.isLoading)
                         }
-                    }
                 }
             }
-        }
+        }.launchIn(viewModelScope)
     }
 
 }

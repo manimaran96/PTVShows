@@ -50,7 +50,7 @@ fun TvSeriesListScreen(
     navController: NavHostController,
 ) {
     val viewModel = hiltViewModel<TvSeriesListViewModel>()
-    val state = viewModel.tvSeriesListState.collectAsState().value
+    val state = viewModel.state.collectAsState().value
 
     val pullRefreshState = rememberPullRefreshState(state.pullToRefresh, { viewModel.fetchTvSeriesFromRemote() })
 

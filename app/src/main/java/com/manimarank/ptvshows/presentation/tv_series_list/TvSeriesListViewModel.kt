@@ -2,15 +2,16 @@ package com.manimarank.ptvshows.presentation.tv_series_list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.manimarank.ptvshows.domain.repository.TvSeriesRepository
+import com.manimarank.ptvshows.domain.use_case.TvSeriesListUseCase
+import com.manimarank.ptvshows.util.AppConstants
 import com.manimarank.ptvshows.util.Resource
 import com.manimarank.ptvshows.util.getValidPage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -18,18 +19,18 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class TvSeriesListViewModel @Inject constructor(
-    private val tvSeriesRepository: TvSeriesRepository
+    private val tvSeriesListUseCase: TvSeriesListUseCase
 ) : ViewModel() {
 
-    private var _tvSeriesListState = MutableStateFlow(TvSeriesListState())
-    val tvSeriesListState = _tvSeriesListState.asStateFlow()
+    private var _state = MutableStateFlow(TvSeriesListState())
+    val state = _state.asStateFlow()
 
     init {
         getPopularTvSeriesList(false)
     }
 
     fun fetchTvSeriesFromRemote() {
-        _tvSeriesListState.update {
+        _state.update {
             it.copy(
                 page = 1,
                 tvSeriesList = emptyList()
@@ -39,49 +40,45 @@ class TvSeriesListViewModel @Inject constructor(
     }
 
     fun loadTvSeries() {
-       getPopularTvSeriesList(true)
+        if (AppConstants.isOnline)
+            getPopularTvSeriesList(true)
     }
 
 
     private fun getPopularTvSeriesList(forceFetchFromRemote: Boolean) {
-        viewModelScope.launch {
-            tvSeriesRepository.getTvSeriesList(
-                forceFetchFromRemote,
-                _tvSeriesListState.value.page
-            ).collectLatest { result ->
-                when (result) {
-                    is Resource.Error -> {
-                        _tvSeriesListState.update {
+        tvSeriesListUseCase(_state.value.page, forceFetchFromRemote = forceFetchFromRemote).onEach { result ->
+            when (result) {
+                is Resource.Error -> {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            error = result.message
+                        )
+                    }
+                }
+
+                is Resource.Success -> {
+                    result.data?.let { tvSeriesList ->
+                        _state.update {
+                            val fullList = it.tvSeriesList + tvSeriesList.tvSeriesList
                             it.copy(
-                                isLoading = false,
-                                error = result.message
+                                tvSeriesList = fullList,
+                                page = fullList.getValidPage(it.page)
                             )
                         }
                     }
+                }
 
-                    is Resource.Success -> {
-                        result.data?.let { tvSeriesList ->
-                            _tvSeriesListState.update {
-                                val fullList = it.tvSeriesList + tvSeriesList.tvSeriesList
-                                it.copy(
-                                    tvSeriesList = fullList,
-                                    page = fullList.getValidPage(it.page)
-                                )
-                            }
-                        }
-                    }
-
-                    is Resource.Loading -> {
-                        // Hiding full screen loader while paginating
-                        if (_tvSeriesListState.value.tvSeriesList.isEmpty() || tvSeriesListState.value.isLoading) {
-                            _tvSeriesListState.update {
-                                it.copy(isLoading = result.isLoading)
-                            }
+                is Resource.Loading -> {
+                    // Hiding full screen loader while paginating
+                    if (_state.value.tvSeriesList.isEmpty() || state.value.isLoading) {
+                        _state.update {
+                            it.copy(isLoading = result.isLoading)
                         }
                     }
                 }
             }
-        }
+        }.launchIn(viewModelScope)
     }
 
 

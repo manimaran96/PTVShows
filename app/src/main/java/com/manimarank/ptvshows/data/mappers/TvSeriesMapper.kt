@@ -100,6 +100,40 @@ fun TvSeriesEntity.toTvSeries(seasonEntities: List<SeasonEntity>? = null, castLi
     )
 }
 
+fun TvSeriesDto.toTvSeries(castListDto: List<CastDto>? = null): TvSeries {
+    return TvSeries(
+        id = id,
+        name = name,
+        adult = adult,
+        backdrop_path = backdrop_path,
+        poster_path = poster_path,
+        overview = overview,
+        popularity = popularity,
+        vote_average = vote_average,
+        vote_count = vote_count,
+        first_air_date = first_air_date,
+        origin_country = origin_country,
+        original_name = original_name,
+        original_language = original_language,
+        tagline = tagline,
+        type = type,
+        status = status,
+        number_of_episodes = number_of_episodes,
+        number_of_seasons = number_of_seasons,
+        languages = languages,
+        genres = genres?.map { it?.name },
+        homepage = homepage,
+        last_air_date = last_air_date,
+        in_production = in_production,
+        networks = networks?.map { it?.name },
+        spoken_languages = spoken_languages?.map { it?.english_name },
+        production_companies = production_companies?.map { it?.name },
+        production_countries = production_countries?.map { it?.name },
+        seasons = seasons?.map { seasonDto ->  seasonDto?.toSeason() },
+        cast_list = castListDto?.map { castDto ->  castDto.toCast() }
+    )
+}
+
 fun SeasonDto.toSeasonEntity(seriesId: Int): SeasonEntity {
     return  SeasonEntity(
         id = id,
@@ -115,6 +149,19 @@ fun SeasonDto.toSeasonEntity(seriesId: Int): SeasonEntity {
 }
 
 fun SeasonEntity.toSeason(): Season {
+    return  Season(
+        id = id,
+        name = name,
+        poster_path = poster_path,
+        season_number = season_number,
+        air_date = air_date,
+        episode_count = episode_count,
+        overview = overview,
+        vote_average = vote_average
+    )
+}
+
+fun SeasonDto.toSeason(): Season {
     return  Season(
         id = id,
         name = name,
@@ -145,6 +192,22 @@ fun CastDto.toCastEntity(seriesId: Int): CastEntity {
 }
 
 fun CastEntity.toCast(): Cast {
+    return  Cast(
+        id = id,
+        name = name,
+        profile_path = profile_path,
+        character = character,
+        order = order,
+        adult = adult,
+        credit_id = credit_id,
+        gender = gender,
+        known_for_department = known_for_department,
+        original_name = original_name,
+        popularity = popularity,
+    )
+}
+
+fun CastDto.toCast(): Cast {
     return  Cast(
         id = id,
         name = name,
