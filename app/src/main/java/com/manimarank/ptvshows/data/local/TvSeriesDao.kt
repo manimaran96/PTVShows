@@ -4,9 +4,10 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Upsert
+import com.manimarank.ptvshows.data.local.entity.CastEntity
 import com.manimarank.ptvshows.data.local.entity.SeasonEntity
 import com.manimarank.ptvshows.data.local.entity.TvSeriesEntity
-import com.manimarank.ptvshows.data.local.entity.TvSeriesWithSeasons
+import com.manimarank.ptvshows.data.local.entity.TvSeriesWithSeasonsAndCast
 
 
 /**
@@ -25,11 +26,14 @@ interface TvSeriesDao {
 
     @Transaction
     @Query("SELECT * FROM TvSeriesEntity WHERE id = :id")
-    suspend fun getTvSeriesById(id: Int): TvSeriesWithSeasons?
+    suspend fun getTvSeriesById(id: Int): TvSeriesWithSeasonsAndCast?
 
     @Query("SELECT * FROM TvSeriesEntity WHERE name LIKE '%' || :searchTerm || '%'")
     suspend fun filterTvSeries(searchTerm: String?): List<TvSeriesEntity>
 
     @Upsert
     suspend fun upsertSeasonsForSeries(seasons: List<SeasonEntity>)
+
+    @Upsert
+    suspend fun upsertCastForSeries(castList: List<CastEntity>)
 }

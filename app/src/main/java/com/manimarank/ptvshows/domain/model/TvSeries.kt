@@ -34,4 +34,5 @@ data class TvSeries(
     val production_companies: List<String?>? = null,
     val production_countries: List<String?>? = null,
     val seasons: List<Season?>? = null,
+    val cast_list: List<Cast?>? = null,
 )

@@ -1,9 +1,12 @@
 package com.manimarank.ptvshows.data.mappers
 
+import com.manimarank.ptvshows.data.local.entity.CastEntity
 import com.manimarank.ptvshows.data.local.entity.SeasonEntity
 import com.manimarank.ptvshows.data.local.entity.TvSeriesEntity
 import com.manimarank.ptvshows.data.remote.dto.TvSeriesDto
+import com.manimarank.ptvshows.data.remote.dto.details.CastDto
 import com.manimarank.ptvshows.data.remote.dto.details.SeasonDto
+import com.manimarank.ptvshows.domain.model.Cast
 import com.manimarank.ptvshows.domain.model.Season
 import com.manimarank.ptvshows.domain.model.TvSeries
 import okio.IOException
@@ -63,7 +66,7 @@ fun TvSeriesDto.toTvSeriesEntity(): TvSeriesEntity {
     )
 }
 
-fun TvSeriesEntity.toTvSeries(seasonEntities: List<SeasonEntity>? = null): TvSeries {
+fun TvSeriesEntity.toTvSeries(seasonEntities: List<SeasonEntity>? = null, castListEntity: List<CastEntity>? = null): TvSeries {
     return TvSeries(
         id = id,
         name = name,
@@ -92,7 +95,8 @@ fun TvSeriesEntity.toTvSeries(seasonEntities: List<SeasonEntity>? = null): TvSer
         spoken_languages = spoken_languages.toStrList(),
         production_companies = production_companies.toStrList(),
         production_countries = production_countries.toStrList(),
-        seasons = seasonEntities?.map { seasonEntity ->  seasonEntity.toSeason() }
+        seasons = seasonEntities?.map { seasonEntity ->  seasonEntity.toSeason() },
+        cast_list = castListEntity?.map { castEntity ->  castEntity.toCast() }
     )
 }
 
@@ -122,6 +126,40 @@ fun SeasonEntity.toSeason(): Season {
         vote_average = vote_average
     )
 }
+
+fun CastDto.toCastEntity(seriesId: Int): CastEntity {
+    return  CastEntity(
+        id = id,
+        name = name,
+        profile_path = profile_path,
+        character = character,
+        order = order,
+        adult = adult,
+        credit_id = credit_id,
+        gender = gender,
+        known_for_department = known_for_department,
+        original_name = original_name,
+        popularity = popularity,
+        series_id = seriesId
+    )
+}
+
+fun CastEntity.toCast(): Cast {
+    return  Cast(
+        id = id,
+        name = name,
+        profile_path = profile_path,
+        character = character,
+        order = order,
+        adult = adult,
+        credit_id = credit_id,
+        gender = gender,
+        known_for_department = known_for_department,
+        original_name = original_name,
+        popularity = popularity,
+    )
+}
+
 
 fun Exception.toDisplayError(): String {
     return when(this) {

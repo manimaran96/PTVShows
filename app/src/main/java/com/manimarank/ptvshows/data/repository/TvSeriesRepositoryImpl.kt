@@ -1,8 +1,10 @@
 package com.manimarank.ptvshows.data.repository
 
 import com.manimarank.ptvshows.data.local.TvSeriesDatabase
+import com.manimarank.ptvshows.data.local.entity.CastEntity
 import com.manimarank.ptvshows.data.local.entity.SeasonEntity
 import com.manimarank.ptvshows.data.local.entity.TvSeriesEntity
+import com.manimarank.ptvshows.data.mappers.toCastEntity
 import com.manimarank.ptvshows.data.mappers.toDisplayError
 import com.manimarank.ptvshows.data.mappers.toSeasonEntity
 import com.manimarank.ptvshows.data.mappers.toTvSeries
@@ -76,6 +78,7 @@ class TvSeriesRepositoryImpl @Inject constructor(
 
             val tvSeriesEntity: TvSeriesEntity?
             val seasonsEntity: List<SeasonEntity>?
+            val castListEntity: List<CastEntity>?
             if (forceFetchFromRemote) {
                 val tvSeriesFromApi = try {
                     tvSeriesApi.getTvSeriesDetails(id)
@@ -84,20 +87,32 @@ class TvSeriesRepositoryImpl @Inject constructor(
                     emit(Resource.Error(message = e.toDisplayError()))
                     return@flow
                 }
+
+                val tvSeriesCastFromApi = try {
+                    tvSeriesApi.getTvSeriesCastDetails(id)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    emit(Resource.Error(message = e.toDisplayError()))
+                    return@flow
+                }
+
                 tvSeriesEntity = tvSeriesFromApi?.toTvSeriesEntity()
                 seasonsEntity = tvSeriesFromApi?.seasons?.mapNotNull { seasonDto -> seasonDto?.toSeasonEntity(tvSeriesEntity?.id ?: -1) }
+                castListEntity = tvSeriesCastFromApi?.cast?.mapNotNull { cast -> cast?.toCastEntity(tvSeriesEntity?.id ?: -1) }
 
                 // Update in local
                 tvSeriesEntity?.let { tvSeriesDatabase.tvSeriesDao.upsertTvSeries(it) }
-                seasonsEntity?.let { tvSeriesDatabase.tvSeriesDao.upsertSeasonsForSeries(seasonsEntity) }
+                seasonsEntity?.let { tvSeriesDatabase.tvSeriesDao.upsertSeasonsForSeries(it) }
+                castListEntity?.let { tvSeriesDatabase.tvSeriesDao.upsertCastForSeries(it) }
 
             } else {
                 val tvSeriesWithSeasonEntity = tvSeriesDatabase.tvSeriesDao.getTvSeriesById(id)
                 tvSeriesEntity = tvSeriesWithSeasonEntity?.tvSeriesEntity
                 seasonsEntity = tvSeriesWithSeasonEntity?.seasons
+                castListEntity = tvSeriesWithSeasonEntity?.castList
             }
 
-            val tvSeries: TvSeries? = tvSeriesEntity?.toTvSeries(seasonsEntity)
+            val tvSeries: TvSeries? = tvSeriesEntity?.toTvSeries(seasonsEntity, castListEntity)
 
             if (tvSeries != null) {
                 emit(Resource.Success(tvSeries))

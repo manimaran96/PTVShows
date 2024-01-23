@@ -33,6 +33,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.manimarank.ptvshows.R
 import com.manimarank.ptvshows.domain.model.TvSeries
 import com.manimarank.ptvshows.presentation.components.AppLoader
+import com.manimarank.ptvshows.presentation.components.CastItem
 import com.manimarank.ptvshows.presentation.components.EmptyWidget
 import com.manimarank.ptvshows.presentation.components.ErrorWidget
 import com.manimarank.ptvshows.presentation.components.RattingStats
@@ -218,11 +219,15 @@ fun TvSeriesSeasons(tvSeries: TvSeries) {
     Column(
         modifier = Modifier.padding(16.dp),
     ) {
-        seasons.forEach {season ->
-            SeasonItem(
-                season = season,
-            )
-            Divider(thickness = 0.2.dp, modifier = Modifier.padding(vertical = 12.dp))
+        if (seasons.isEmpty()) {
+            EmptyWidget()
+        } else {
+            seasons.forEach {season ->
+                SeasonItem(
+                    season = season,
+                )
+                Divider(thickness = 0.2.dp, modifier = Modifier.padding(vertical = 12.dp))
+            }
         }
     }
 }
@@ -233,9 +238,19 @@ fun TvSeriesSeasons(tvSeries: TvSeries) {
  */
 @Composable
 fun TvSeriesCast(tvSeries: TvSeries) {
+    val castList = tvSeries.cast_list?.filterNotNull()?.sortedBy { it.order } ?: emptyList()
     Column(
         modifier = Modifier.padding(16.dp),
     ) {
-        Text(text = stringResource(id = R.string.cast))
+        if (castList.isEmpty()) {
+            EmptyWidget()
+        } else {
+            castList.forEach {cast ->
+                CastItem(
+                    cast = cast,
+                )
+                Divider(thickness = 0.2.dp, modifier = Modifier.padding(vertical = 12.dp))
+            }
+        }
     }
 }

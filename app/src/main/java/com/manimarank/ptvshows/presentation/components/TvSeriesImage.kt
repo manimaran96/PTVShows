@@ -27,6 +27,9 @@ import com.manimarank.ptvshows.data.remote.TvSeriesApi
 import com.manimarank.ptvshows.ui.theme.defaultImageBg
 import com.manimarank.ptvshows.util.ImageAspectRatio
 
+/**
+ * Component for TV Series Image
+ */
 @Composable
 fun TvSeriesImage(
     imagePath: String?,

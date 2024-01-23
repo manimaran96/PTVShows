@@ -3,6 +3,7 @@ package com.manimarank.ptvshows.data.remote
 import com.manimarank.ptvshows.BuildConfig
 import com.manimarank.ptvshows.data.remote.dto.TvSeriesDto
 import com.manimarank.ptvshows.data.remote.dto.TvSeriesListDto
+import com.manimarank.ptvshows.data.remote.dto.details.CastListDto
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -23,6 +24,12 @@ interface TvSeriesApi {
         @Path("series_id") seriesId: Int,
         @Query("api_key") apiKey: String = Companion.apiKey,
     ): TvSeriesDto?
+
+    @GET("tv/{series_id}/credits")
+    suspend fun getTvSeriesCastDetails(
+        @Path("series_id") seriesId: Int,
+        @Query("api_key") apiKey: String = Companion.apiKey,
+    ): CastListDto?
 
     @GET("search/tv")
     suspend fun searchTvSeries(
