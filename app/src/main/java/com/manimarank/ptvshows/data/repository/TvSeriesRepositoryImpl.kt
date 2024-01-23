@@ -6,6 +6,7 @@ import com.manimarank.ptvshows.data.mappers.toTvSeries
 import com.manimarank.ptvshows.data.mappers.toTvSeriesEntity
 import com.manimarank.ptvshows.data.remote.TvSeriesApi
 import com.manimarank.ptvshows.domain.model.TvSeries
+import com.manimarank.ptvshows.domain.model.TvSeriesList
 import com.manimarank.ptvshows.domain.repository.TvSeriesRepository
 import com.manimarank.ptvshows.util.Resource
 import kotlinx.coroutines.flow.Flow
@@ -22,7 +23,7 @@ class TvSeriesRepositoryImpl @Inject constructor(
     override suspend fun getTvSeriesList(
         forceFetchFromRemote: Boolean,
         page: Int
-    ): Flow<Resource<List<TvSeries>>> {
+    ): Flow<Resource<TvSeriesList>> {
         return flow {
             emit(Resource.Loading(true))
             val localTvSeriesList = tvSeriesDatabase.tvSeriesDao.getTvSeriesList()
@@ -30,9 +31,9 @@ class TvSeriesRepositoryImpl @Inject constructor(
 
             if (shouldLoadFromLocal) {
                 emit(Resource.Success(
-                    data = localTvSeriesList.map { tvSeriesEntity ->
-                        tvSeriesEntity.toTvSeries()
-                    }
+                    TvSeriesList(
+                        localTvSeriesList.map { tvSeriesEntity -> tvSeriesEntity.toTvSeries() }
+                    )
                 ))
 
                 emit(Resource.Loading(false))
@@ -56,7 +57,10 @@ class TvSeriesRepositoryImpl @Inject constructor(
             tvSeriesDatabase.tvSeriesDao.upsertTvSeriesList(tvSeriesEntities)
 
             emit(Resource.Success(
-                tvSeriesEntities.map { it.toTvSeries() }
+                TvSeriesList(
+                    tvSeriesEntities.map { it.toTvSeries() },
+                    tvSeriesListFromApi.total_pages
+                )
             ))
             emit(Resource.Loading(false))
         }
@@ -94,7 +98,7 @@ class TvSeriesRepositoryImpl @Inject constructor(
         searchTerm: String,
         forceFetchFromRemote: Boolean,
         page: Int
-    ): Flow<Resource<List<TvSeries>>> {
+    ): Flow<Resource<TvSeriesList>> {
         return flow {
             emit(Resource.Loading(true))
             val localTvSeriesList = tvSeriesDatabase.tvSeriesDao.filterTvSeries(searchTerm)
@@ -102,9 +106,9 @@ class TvSeriesRepositoryImpl @Inject constructor(
 
             if (shouldLoadFromLocal) {
                 emit(Resource.Success(
-                    data = localTvSeriesList.map { tvSeriesEntity ->
-                        tvSeriesEntity.toTvSeries()
-                    }
+                    TvSeriesList(
+                        localTvSeriesList.map { tvSeriesEntity -> tvSeriesEntity.toTvSeries() },
+                    )
                 ))
 
                 emit(Resource.Loading(false))
@@ -128,7 +132,10 @@ class TvSeriesRepositoryImpl @Inject constructor(
             tvSeriesDatabase.tvSeriesDao.upsertTvSeriesList(tvSeriesEntities)
 
             emit(Resource.Success(
-                tvSeriesEntities.map { it.toTvSeries() }
+                TvSeriesList(
+                    tvSeriesEntities.map { it.toTvSeries() },
+                    totalPage = tvSeriesListFromApi.total_pages
+                )
             ))
             emit(Resource.Loading(false))
         }

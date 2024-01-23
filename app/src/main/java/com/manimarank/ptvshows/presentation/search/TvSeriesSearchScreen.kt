@@ -121,6 +121,10 @@ fun TvSeriesSearchScreen(
                                 navHostController = navController
                             )
                             Spacer(modifier = Modifier.height(16.dp))
+
+                            if (index >= state.tvSeriesList.size - 1 && state.page != -1) {
+                                viewModel.searchTvSeriesList(searchQuery = searchQuery, true, loadMore = true)
+                            }
                         }
                     }
                 }

@@ -1,6 +1,7 @@
 package com.manimarank.ptvshows.domain.repository
 
 import com.manimarank.ptvshows.domain.model.TvSeries
+import com.manimarank.ptvshows.domain.model.TvSeriesList
 import com.manimarank.ptvshows.util.Resource
 import kotlinx.coroutines.flow.Flow
 
@@ -11,7 +12,7 @@ interface TvSeriesRepository {
     suspend fun getTvSeriesList(
         forceFetchFromRemote: Boolean = false,
         page: Int
-    ): Flow<Resource<List<TvSeries>>>
+    ): Flow<Resource<TvSeriesList>>
 
     suspend fun getTvSeries(id: Int): Flow<Resource<TvSeries>>
 
@@ -19,5 +20,5 @@ interface TvSeriesRepository {
         searchTerm: String,
         forceFetchFromRemote: Boolean = false,
         page: Int
-    ): Flow<Resource<List<TvSeries>>>
+    ): Flow<Resource<TvSeriesList>>
 }

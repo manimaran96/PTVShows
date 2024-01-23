@@ -50,7 +50,7 @@ fun RattingStats(rating: Double, rattersCount: Int? = null) {
 
             Text(
                 modifier = Modifier.padding(start = 4.dp),
-                text = "${(rating*10).toString().take(2)}%",
+                text = "${if (rating > 0.0) (rating*10).toString().take(2) else 0}%",
                 fontSize = 12.sp,
                 maxLines = 1,
                 fontWeight = FontWeight.Light

@@ -14,7 +14,7 @@ interface TvSeriesDao {
     @Upsert
     suspend fun upsertTvSeriesList(tvSeriesList: List<TvSeriesEntity>)
 
-    @Query("SELECT * FROM TvSeriesEntity")
+    @Query("SELECT * FROM TvSeriesEntity ORDER BY id DESC")
     suspend fun getTvSeriesList(): List<TvSeriesEntity>
 
     @Query("SELECT * FROM TvSeriesEntity WHERE id = :id")

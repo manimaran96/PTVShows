@@ -14,6 +14,8 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import com.manimarank.ptvshows.presentation.components.pullrefresh.pullRefresh
+import com.manimarank.ptvshows.presentation.components.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -36,6 +38,7 @@ import com.manimarank.ptvshows.presentation.components.AppLoader
 import com.manimarank.ptvshows.presentation.components.EmptyWidget
 import com.manimarank.ptvshows.presentation.components.ErrorWidget
 import com.manimarank.ptvshows.presentation.components.TvSeriesItem
+import com.manimarank.ptvshows.presentation.components.pullrefresh.PullRefreshIndicator
 import com.manimarank.ptvshows.util.Screen
 
 /**
@@ -48,6 +51,8 @@ fun TvSeriesListScreen(
 ) {
     val viewModel = hiltViewModel<TvSeriesListViewModel>()
     val state = viewModel.tvSeriesListState.collectAsState().value
+
+    val pullRefreshState = rememberPullRefreshState(state.pullToRefresh, { viewModel.fetchTvSeriesFromRemote() })
 
     Scaffold (
         topBar = {
@@ -84,6 +89,7 @@ fun TvSeriesListScreen(
         Box(
             modifier = Modifier
                 .padding(innerPadding)
+                .pullRefresh(pullRefreshState)
                 .fillMaxSize(),
         ) {
             when {
@@ -102,10 +108,18 @@ fun TvSeriesListScreen(
                                 navHostController = navController
                             )
                             Spacer(modifier = Modifier.height(16.dp))
+
+                            if (index >= state.tvSeriesList.size - 1 && state.page != -1) {
+                                viewModel.loadTvSeries()
+                            }
+
                         }
+
                     }
                 }
             }
+
+            PullRefreshIndicator(state.pullToRefresh, pullRefreshState, Modifier.align(Alignment.TopCenter))
 
         }
     }

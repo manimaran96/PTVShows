@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.manimarank.ptvshows.domain.repository.TvSeriesRepository
 import com.manimarank.ptvshows.util.Resource
+import com.manimarank.ptvshows.util.getValidPage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,13 +23,18 @@ class TvSeriesSearchViewModel @Inject constructor(
 
     private var _state = MutableStateFlow(TvSeriesSearchState())
     val state = _state.asStateFlow()
-    fun searchTvSeriesList(searchQuery: String, forceFetchFromRemote: Boolean) {
 
-        _state.update {
-            it.copy(
-                tvSeriesList = emptyList(),
-                isLoading = true
-            )
+    fun searchTvSeriesList(searchQuery: String, forceFetchFromRemote: Boolean, loadMore: Boolean = false) {
+
+        if (!loadMore) {
+            _state.update {
+                it.copy(
+                    page = 1,
+                    tvSeriesList = emptyList(),
+                    isLoading = true,
+                )
+            }
+
         }
 
         viewModelScope.launch {
@@ -48,17 +54,19 @@ class TvSeriesSearchViewModel @Inject constructor(
                     }
 
                     is Resource.Success -> {
-                        result.data?.let { tvSeriesList ->
+                        result.data?.let { data ->
                             _state.update {
+                                val fullList = it.tvSeriesList + data.tvSeriesList
                                 it.copy(
-                                    tvSeriesList = _state.value.tvSeriesList + tvSeriesList,
-                                    page = _state.value.page + 1
+                                    tvSeriesList = fullList,
+                                    page = fullList.getValidPage(it.page, data.totalPage ?: 0)
                                 )
                             }
                         }
                     }
 
                     is Resource.Loading -> {
+                        if (!loadMore)
                         _state.update {
                             it.copy(isLoading = result.isLoading)
                         }

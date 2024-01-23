@@ -9,5 +9,7 @@ data class TvSeriesListState(
     val isLoading: Boolean = false,
     val page: Int = 1,
     val tvSeriesList: List<TvSeries> = emptyList(),
-    val error: String? = null
+    val totalPages: Int? = null,
+    val error: String? = null,
+    val pullToRefresh: Boolean = false
 )

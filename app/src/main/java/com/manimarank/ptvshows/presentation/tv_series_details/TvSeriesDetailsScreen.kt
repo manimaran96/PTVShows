@@ -54,8 +54,7 @@ fun TvSeriesDetailsScreen() {
                 state.tvSeries == null -> EmptyWidget()
                 else -> {
                     Column(
-                        modifier = Modifier
-                            .fillMaxSize()
+                        modifier = Modifier.fillMaxSize()
                             .verticalScroll(rememberScrollState())
                     ) {
                         TvSeriesImage(imagePath = state.tvSeries.backdrop_path, aspectRatio = ImageAspectRatio.cover, contentDescription = state.tvSeries.name)
@@ -98,7 +97,8 @@ fun TvSeriesDetailsScreen() {
                                         Spacer(modifier = Modifier.height(8.dp))
                                     }
 
-                                    Text(text = DateUtils.displayDate(tvSeries.first_air_date))
+                                    if (!tvSeries.first_air_date.isNullOrEmpty())
+                                        Text(text = DateUtils.displayDate(tvSeries.first_air_date))
 
                                     Spacer(modifier = Modifier.height(8.dp))
 
@@ -112,13 +112,14 @@ fun TvSeriesDetailsScreen() {
                             }
                         }
 
-                        if (state.tvSeries.genres?.isNotEmpty() == true)
+                        if (state.tvSeries.genres?.isNotEmpty() == true) {
                             Text(
                                 text = state.tvSeries.genres.joinToString(" | "),
                                 modifier = Modifier.padding(16.dp),
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Light
                             )
+                        }
 
                         TvSeriesMoreDetails(state.tvSeries)
                     }
@@ -156,18 +157,21 @@ fun TvSeriesMoreDetails(tvSeries: TvSeries) {
             stringResource(R.string.networks) to (tvSeries.networks?.joinToString(", ") ?: ""),
         ).filter { it.value.isNotEmpty() }
 
-        Column(
-            Modifier
-                .fillMaxSize()
-                .padding(vertical = 16.dp)) {
-            detailsMap.forEach {
-                Divider(thickness = 0.2.dp, modifier = Modifier.padding(vertical = 12.dp))
-                Row(Modifier.fillMaxWidth()) {
-                    Text(text = it.key, modifier = Modifier.weight(0.4f))
-                    Text(text = it.value, modifier = Modifier.weight(0.6f), fontWeight = FontWeight.SemiBold)
+        if (detailsMap.isNotEmpty()) {
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .padding(vertical = 10.dp))
+            {
+                detailsMap.forEach {
+                    Divider(thickness = 0.2.dp, modifier = Modifier.padding(vertical = 12.dp))
+                    Row(Modifier.fillMaxWidth()) {
+                        Text(text = it.key, modifier = Modifier.weight(0.4f))
+                        Text(text = it.value, modifier = Modifier.weight(0.6f), fontWeight = FontWeight.SemiBold)
+                    }
                 }
+                Divider(thickness = 0.2.dp, modifier = Modifier.padding(vertical = 12.dp))
             }
-            Divider(thickness = 0.2.dp, modifier = Modifier.padding(vertical = 12.dp))
         }
     }
 }

@@ -10,7 +10,7 @@ object DateUtils {
     private val displayFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
 
     fun displayDate(date: String?): String {
-        return if (date != null) LocalDate.parse(date).format(displayFormatter) else ""
+        return if (!date.isNullOrEmpty()) LocalDate.parse(date).format(displayFormatter) else ""
     }
 }
 

@@ -8,6 +8,7 @@ import com.manimarank.ptvshows.domain.model.TvSeries
 data class TvSeriesSearchState(
     val isLoading: Boolean = false,
     val page: Int = 1,
+    val totalPages: Int? = null,
     val tvSeriesList: List<TvSeries> = emptyList(),
     val error: String? = null,
 )
