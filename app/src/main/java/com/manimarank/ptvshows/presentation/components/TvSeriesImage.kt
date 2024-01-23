@@ -3,6 +3,7 @@ package com.manimarank.ptvshows.presentation.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
@@ -10,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
@@ -30,7 +32,8 @@ fun TvSeriesImage(
     imagePath: String?,
     contentDescription: String? = null,
     aspectRatio: Float = ImageAspectRatio.poster,
-    clipShape: Shape = RoundedCornerShape(0.dp)
+    clipShape: Shape = RoundedCornerShape(0.dp),
+    defaultIconSize: Int = 50
 ) {
 
     val imageState = rememberAsyncImagePainter(
@@ -62,11 +65,14 @@ fun TvSeriesImage(
                     .background(defaultImageBg),
                 contentAlignment = Alignment.Center
             ) {
-                Image(
-                    painterResource(R.drawable.default_image),
-                    modifier = Modifier.size(50.dp),
-                    contentDescription = contentDescription
-                )
+                if (imageState is AsyncImagePainter.State.Error)
+                    Image(
+                        painterResource(R.drawable.default_image),
+                        modifier = Modifier.size(defaultIconSize.dp).alpha(0.5f),
+                        contentDescription = contentDescription,
+                    )
+                else
+                    Spacer(modifier = Modifier.size(0.dp))
             }
         }
     }
