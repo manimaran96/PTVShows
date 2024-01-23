@@ -1,10 +1,10 @@
-package com.manimarank.ptvshows.data.remote.dto.details
+package com.manimarank.ptvshows.domain.model
 
 
 /**
- * API Data model for Season
+ * Model class for Season
  */
-data class SeasonDto(
+data class Season(
     val id: Int?,
     val name: String?,
     val poster_path: String?,

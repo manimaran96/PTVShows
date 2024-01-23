@@ -51,6 +51,9 @@ fun TvSeriesDetailsScreen() {
     val viewModel = hiltViewModel<TvSeriesDetailsViewModel>()
     val state = viewModel.state.collectAsState().value
 
+    val tabs = listOf(stringResource(R.string.details), stringResource(R.string.seasons), stringResource(R.string.cast))
+    var tabIndex by remember { mutableIntStateOf(0) }
+
     Scaffold { innerPadding ->
         Box (
             modifier = Modifier.padding(innerPadding)
@@ -61,7 +64,8 @@ fun TvSeriesDetailsScreen() {
                 state.tvSeries == null -> EmptyWidget()
                 else -> {
                     Column(
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier
+                            .fillMaxSize()
                             .verticalScroll(rememberScrollState())
                     ) {
                         TvSeriesImage(imagePath = state.tvSeries.backdrop_path, aspectRatio = ImageAspectRatio.cover, contentDescription = state.tvSeries.name)
@@ -74,7 +78,7 @@ fun TvSeriesDetailsScreen() {
                                 .padding(horizontal = 16.dp)
                         ) {
                             Box(modifier = Modifier.width(100.dp)) {
-                                TvSeriesImage(imagePath = state.tvSeries.poster_path, clipShape = RoundedCornerShape(6.dp), contentDescription = state.tvSeries.name)
+                                TvSeriesImage(imagePath = state.tvSeries.poster_path, clipShape = RoundedCornerShape(6.dp), contentDescription = state.tvSeries.name, defaultIconSize = 35)
                             }
 
                             state.tvSeries.let { tvSeries ->
@@ -109,26 +113,54 @@ fun TvSeriesDetailsScreen() {
 
                                     Spacer(modifier = Modifier.height(8.dp))
 
-                                    val movieContentRate = if(tvSeries.adult == false) MovieContentRatting.U else MovieContentRatting.UA
-                                    val seasonInfo = "${tvSeries.number_of_seasons ?: 0} ${stringResource(id = if ((tvSeries.number_of_seasons ?: 0) > 1) R.string.seasons else R.string.season)}"
+                                    Row {
+                                        val movieContentRate = if(tvSeries.adult == false) MovieContentRatting.U else MovieContentRatting.UA
+                                        Text(
+                                            text =  movieContentRate.name,
+                                        )
 
-                                    Text(
-                                        text =  "$movieContentRate | $seasonInfo",
-                                    )
+                                        val seasonInfo: String = if ((tvSeries.number_of_seasons ?: 0) > 0)
+                                            "${tvSeries.number_of_seasons ?: 0} ${stringResource(id = if ((tvSeries.number_of_seasons ?: 0) > 1) R.string.seasons else R.string.season)}"
+                                        else ""
+                                        if (seasonInfo.isNotEmpty())
+                                            Text(text = " | $seasonInfo")
+                                    }
+
+
                                 }
                             }
                         }
 
-                        if (state.tvSeries.genres?.isNotEmpty() == true) {
+                        val genres = if (state.tvSeries.genres?.filterNotNull()?.isNotEmpty() == true) state.tvSeries.genres.joinToString(" | ") else null
+                        if (!genres.isNullOrBlank()) {
                             Text(
-                                text = state.tvSeries.genres.joinToString(" | "),
-                                modifier = Modifier.padding(16.dp),
+                                text = genres,
                                 fontSize = 16.sp,
+                                modifier = Modifier.padding(16.dp),
                                 fontWeight = FontWeight.Light
                             )
                         }
 
-                        TvSeriesMoreDetails(state.tvSeries)
+                        TabRow(
+                            selectedTabIndex = tabIndex,
+                        ) {
+                            tabs.forEachIndexed { index, title ->
+                                Tab(text = {
+                                    Text(
+                                        text = tabs[index]
+                                    )
+                                },
+                                    selected = tabIndex == index,
+                                    onClick = { tabIndex = index }
+                                )
+                            }
+                        }
+
+                        when (tabs[tabIndex]) {
+                            stringResource(id = R.string.seasons) -> TvSeriesSeasons(state.tvSeries)
+                            stringResource(id = R.string.cast) -> TvSeriesCast(state.tvSeries)
+                            else -> TvSeriesMoreDetails(state.tvSeries)
+                        }
                     }
                 }
             }
@@ -143,42 +175,67 @@ fun TvSeriesDetailsScreen() {
 @Composable
 fun TvSeriesMoreDetails(tvSeries: TvSeries) {
     Column (
-        modifier = Modifier.padding(horizontal = 16.dp),
+        modifier = Modifier.padding(16.dp),
     ) {
 
         if (!tvSeries.overview.isNullOrEmpty())
             Text(
                 text = tvSeries.overview,
                 fontSize = 16.sp,
+                modifier = Modifier.padding(bottom = 16.dp),
                 fontWeight = FontWeight.Light
             )
 
-        val detailsMap: Map<String, String> = mapOf(
-            stringResource(R.string.type) to (tvSeries.type ?: ""),
-            stringResource(R.string.original_name) to (tvSeries.original_name ?: ""),
-            stringResource(R.string.status) to (tvSeries.status ?: ""),
-            stringResource(R.string.languages) to (tvSeries.spoken_languages?.joinToString(", ") ?: ""),
-            stringResource(R.string.total_episodes) to (tvSeries.number_of_episodes?.toString() ?: ""),
-            stringResource(R.string.popularity) to (tvSeries.popularity?.toString() ?: ""),
-            stringResource(R.string.production_companies) to (tvSeries.production_companies?.joinToString(", ") ?: ""),
-            stringResource(R.string.networks) to (tvSeries.networks?.joinToString(", ") ?: ""),
-        ).filter { it.value.isNotEmpty() }
+        val detailsMap = mutableMapOf<String, String>().apply {
+            put(stringResource(R.string.type), tvSeries.type ?: "")
+            put(stringResource(R.string.original_name), tvSeries.original_name ?: "")
+            put(stringResource(R.string.status), tvSeries.status ?: "")
+            put(stringResource(R.string.languages), tvSeries.spoken_languages?.joinToString(", ") ?: "")
+            if ((tvSeries.number_of_episodes ?: 0) > 0)
+                put(stringResource(R.string.total_episodes), tvSeries.number_of_episodes?.toString() ?: "")
+            put(stringResource(R.string.popularity), tvSeries.popularity?.toString() ?: "")
+            put(stringResource(R.string.production_companies), tvSeries.production_companies?.joinToString(", ") ?: "")
+            put(stringResource(R.string.networks), tvSeries.networks?.joinToString(", ") ?: "")
+        }.filter { it.value.isNotEmpty() }
 
-        if (detailsMap.isNotEmpty()) {
-            Column(
-                Modifier
-                    .fillMaxSize()
-                    .padding(vertical = 10.dp))
-            {
-                detailsMap.forEach {
-                    Divider(thickness = 0.2.dp, modifier = Modifier.padding(vertical = 12.dp))
-                    Row(Modifier.fillMaxWidth()) {
-                        Text(text = it.key, modifier = Modifier.weight(0.4f))
-                        Text(text = it.value, modifier = Modifier.weight(0.6f), fontWeight = FontWeight.SemiBold)
-                    }
-                }
-                Divider(thickness = 0.2.dp, modifier = Modifier.padding(vertical = 12.dp))
+        detailsMap.forEach {
+            Divider(thickness = 0.2.dp, modifier = Modifier.padding(vertical = 12.dp))
+            Row(Modifier.fillMaxWidth()) {
+                Text(text = it.key, modifier = Modifier.weight(0.4f))
+                Text(text = it.value, modifier = Modifier.weight(0.6f), fontWeight = FontWeight.SemiBold)
             }
         }
+        Divider(thickness = 0.2.dp, modifier = Modifier.padding(vertical = 12.dp))
+    }
+}
+
+/**
+ * Component for TV Series Seasons full details
+ */
+@Composable
+fun TvSeriesSeasons(tvSeries: TvSeries) {
+    val seasons = tvSeries.seasons?.filterNotNull() ?: emptyList()
+    Column(
+        modifier = Modifier.padding(16.dp),
+    ) {
+        seasons.forEach {season ->
+            SeasonItem(
+                season = season,
+            )
+            Divider(thickness = 0.2.dp, modifier = Modifier.padding(vertical = 12.dp))
+        }
+    }
+}
+
+
+/**
+ * Component for TV Series Cast
+ */
+@Composable
+fun TvSeriesCast(tvSeries: TvSeries) {
+    Column(
+        modifier = Modifier.padding(16.dp),
+    ) {
+        Text(text = stringResource(id = R.string.cast))
     }
 }

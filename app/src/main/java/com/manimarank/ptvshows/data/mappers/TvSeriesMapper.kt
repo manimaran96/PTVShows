@@ -1,7 +1,10 @@
 package com.manimarank.ptvshows.data.mappers
 
+import com.manimarank.ptvshows.data.local.entity.SeasonEntity
 import com.manimarank.ptvshows.data.local.entity.TvSeriesEntity
 import com.manimarank.ptvshows.data.remote.dto.TvSeriesDto
+import com.manimarank.ptvshows.data.remote.dto.details.SeasonDto
+import com.manimarank.ptvshows.domain.model.Season
 import com.manimarank.ptvshows.domain.model.TvSeries
 import okio.IOException
 import retrofit2.HttpException
@@ -60,7 +63,7 @@ fun TvSeriesDto.toTvSeriesEntity(): TvSeriesEntity {
     )
 }
 
-fun TvSeriesEntity.toTvSeries(): TvSeries {
+fun TvSeriesEntity.toTvSeries(seasonEntities: List<SeasonEntity>? = null): TvSeries {
     return TvSeries(
         id = id,
         name = name,
@@ -88,7 +91,35 @@ fun TvSeriesEntity.toTvSeries(): TvSeries {
         networks = networks.toStrList(),
         spoken_languages = spoken_languages.toStrList(),
         production_companies = production_companies.toStrList(),
-        production_countries = production_countries.toStrList()
+        production_countries = production_countries.toStrList(),
+        seasons = seasonEntities?.map { seasonEntity ->  seasonEntity.toSeason() }
+    )
+}
+
+fun SeasonDto.toSeasonEntity(seriesId: Int): SeasonEntity {
+    return  SeasonEntity(
+        id = id,
+        name = name,
+        poster_path = poster_path,
+        season_number = season_number,
+        air_date = air_date,
+        episode_count = episode_count,
+        overview = overview,
+        vote_average = vote_average,
+        series_id = seriesId
+    )
+}
+
+fun SeasonEntity.toSeason(): Season {
+    return  Season(
+        id = id,
+        name = name,
+        poster_path = poster_path,
+        season_number = season_number,
+        air_date = air_date,
+        episode_count = episode_count,
+        overview = overview,
+        vote_average = vote_average
     )
 }
 

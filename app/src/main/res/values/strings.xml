@@ -18,4 +18,7 @@
     <string name="popularity">Popularity</string>
     <string name="production_companies">Production companies</string>
     <string name="networks">Networks</string>
+    <string name="episodes">Episodes</string>
+    <string name="details">Details</string>
+    <string name="cast">Cast</string>
 </resources>
