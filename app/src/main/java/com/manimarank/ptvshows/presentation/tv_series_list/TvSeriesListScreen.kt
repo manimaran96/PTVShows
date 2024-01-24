@@ -26,6 +26,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -41,6 +42,7 @@ import com.manimarank.ptvshows.presentation.components.pullrefresh.PullRefreshIn
 import com.manimarank.ptvshows.presentation.components.pullrefresh.pullRefresh
 import com.manimarank.ptvshows.presentation.components.pullrefresh.rememberPullRefreshState
 import com.manimarank.ptvshows.util.Screen
+import com.manimarank.ptvshows.util.gridItemRowCount
 
 /**
  * TV Series List Screen
@@ -100,7 +102,7 @@ fun TvSeriesListScreen(
                 state.tvSeriesList.isEmpty() -> EmptyWidget()
                 else -> {
                     LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
+                        columns = GridCells.Fixed(LocalContext.current.gridItemRowCount()),
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(vertical = 8.dp, horizontal = 8.dp)
                     ) {

@@ -24,6 +24,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -42,6 +43,7 @@ import com.manimarank.ptvshows.presentation.components.TvSeriesImage
 import com.manimarank.ptvshows.util.DateUtils
 import com.manimarank.ptvshows.util.ImageAspectRatio
 import com.manimarank.ptvshows.util.MovieContentRatting
+import com.manimarank.ptvshows.util.isLandscape
 
 /**
  * TV Series Details Screen
@@ -69,7 +71,8 @@ fun TvSeriesDetailsScreen() {
                             .fillMaxSize()
                             .verticalScroll(rememberScrollState())
                     ) {
-                        TvSeriesImage(imagePath = state.tvSeries.backdrop_path, aspectRatio = ImageAspectRatio.cover, contentDescription = state.tvSeries.name)
+                        if (!LocalContext.current.isLandscape())
+                            TvSeriesImage(imagePath = state.tvSeries.backdrop_path, aspectRatio = ImageAspectRatio.cover, contentDescription = state.tvSeries.name)
 
                         Spacer(modifier = Modifier.height(24.dp))
 
@@ -85,7 +88,7 @@ fun TvSeriesDetailsScreen() {
                             state.tvSeries.let { tvSeries ->
                                 Column(
                                     modifier = Modifier
-                                        .fillMaxWidth()
+                                        .fillMaxWidth(if (LocalContext.current.isLandscape()) 0.6f else 1f)
                                         .padding(start = 12.dp)
                                 ) {
                                     Text(
@@ -130,6 +133,17 @@ fun TvSeriesDetailsScreen() {
 
                                 }
                             }
+
+                            if (LocalContext.current.isLandscape())
+                                Box (modifier = Modifier.padding(horizontal = 16.dp)) {
+                                    TvSeriesImage(
+                                        imagePath = state.tvSeries.backdrop_path,
+                                        aspectRatio = ImageAspectRatio.cover,
+                                        contentDescription = state.tvSeries.name,
+                                        clipShape = RoundedCornerShape(4.dp)
+                                    )
+                                }
+
                         }
 
                         val genres = if (state.tvSeries.genres?.filterNotNull()?.isNotEmpty() == true) state.tvSeries.genres.joinToString(" | ") else null
