@@ -51,7 +51,15 @@ PTV Shows app utilizes the following technologies to deliver a smooth and effici
 
 [<img src="./files/get_in_github.png" alt='Get it on GitHub' height="80">](https://github.com/manimaran96/ptv/releases/latest)
 
-## Screens
+## Demo Video
+
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=dKun84Vp4gM
+" target="_blank"><img src="./files/home.jpg" 
+alt="Play Demo Video" width="240" height="520" border="10" /></a>
+
+Video link: https://youtu.be/dKun84Vp4gM
+
+## Screenshots
 
 ### Splash & Home Screen
 
