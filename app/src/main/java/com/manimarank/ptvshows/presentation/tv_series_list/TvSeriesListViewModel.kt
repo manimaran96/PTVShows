@@ -3,7 +3,7 @@ package com.manimarank.ptvshows.presentation.tv_series_list
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.manimarank.ptvshows.domain.use_case.TvSeriesListUseCase
-import com.manimarank.ptvshows.util.AppConstants
+import com.manimarank.ptvshows.util.NetworkManger
 import com.manimarank.ptvshows.util.Resource
 import com.manimarank.ptvshows.util.getValidPage
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,29 +19,32 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class TvSeriesListViewModel @Inject constructor(
-    private val tvSeriesListUseCase: TvSeriesListUseCase
+    private val tvSeriesListUseCase: TvSeriesListUseCase,
+    private val networkManger: NetworkManger
 ) : ViewModel() {
 
     private var _state = MutableStateFlow(TvSeriesListState())
     val state = _state.asStateFlow()
 
     init {
-        getPopularTvSeriesList(false)
+        getPopularTvSeriesList(networkManger.isConnected())
     }
 
     fun fetchTvSeriesFromRemote() {
         _state.update {
             it.copy(
                 page = 1,
-                tvSeriesList = emptyList()
+                tvSeriesList = emptyList(),
+                networkDisconnected = !networkManger.isConnected()
             )
         }
-        getPopularTvSeriesList(true)
+        if (networkManger.isConnected())
+            getPopularTvSeriesList(true)
     }
 
     fun loadTvSeries() {
-        if (AppConstants.isOnline)
-            getPopularTvSeriesList(true)
+       if (networkManger.isConnected())
+           getPopularTvSeriesList(true)
     }
 
 

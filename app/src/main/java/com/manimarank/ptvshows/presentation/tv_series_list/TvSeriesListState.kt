@@ -11,5 +11,6 @@ data class TvSeriesListState(
     val tvSeriesList: List<TvSeries> = emptyList(),
     val totalPages: Int? = null,
     val error: String? = null,
-    val pullToRefresh: Boolean = false
+    val pullToRefresh: Boolean = false,
+    val networkDisconnected: Boolean = false
 )

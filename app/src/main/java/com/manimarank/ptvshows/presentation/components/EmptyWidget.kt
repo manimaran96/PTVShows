@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -44,7 +45,8 @@ fun EmptyWidget(message: String? = null) {
 
         Text(
             text = message ?: stringResource(R.string.no_results_found),
-            modifier = Modifier.padding(8.dp)
+            modifier = Modifier.padding(8.dp),
+            textAlign = TextAlign.Center
         )
     }
 }

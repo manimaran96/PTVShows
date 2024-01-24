@@ -14,8 +14,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import com.manimarank.ptvshows.presentation.components.pullrefresh.pullRefresh
-import com.manimarank.ptvshows.presentation.components.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -37,8 +35,11 @@ import com.manimarank.ptvshows.R
 import com.manimarank.ptvshows.presentation.components.AppLoader
 import com.manimarank.ptvshows.presentation.components.EmptyWidget
 import com.manimarank.ptvshows.presentation.components.ErrorWidget
+import com.manimarank.ptvshows.presentation.components.NetworkErrorWidget
 import com.manimarank.ptvshows.presentation.components.TvSeriesItem
 import com.manimarank.ptvshows.presentation.components.pullrefresh.PullRefreshIndicator
+import com.manimarank.ptvshows.presentation.components.pullrefresh.pullRefresh
+import com.manimarank.ptvshows.presentation.components.pullrefresh.rememberPullRefreshState
 import com.manimarank.ptvshows.util.Screen
 
 /**
@@ -94,6 +95,7 @@ fun TvSeriesListScreen(
         ) {
             when {
                 state.isLoading -> AppLoader()
+                state.networkDisconnected -> NetworkErrorWidget { viewModel.fetchTvSeriesFromRemote() }
                 state.error != null -> ErrorWidget(state.error)
                 state.tvSeriesList.isEmpty() -> EmptyWidget()
                 else -> {
@@ -120,7 +122,6 @@ fun TvSeriesListScreen(
             }
 
             PullRefreshIndicator(state.pullToRefresh, pullRefreshState, Modifier.align(Alignment.TopCenter))
-
         }
     }
 

@@ -226,8 +226,8 @@ fun CastDto.toCast(): Cast {
 
 fun Exception.toDisplayError(): String {
     return when(this) {
-        is IOException -> "Error loading data"
-        is HttpException -> "Error loading data"
-        else -> "Something went wrong!"
+        is IOException -> "Something went wrong!\nUnable to load data"
+        is HttpException -> "Something went wrong!\nUnable to load data"
+        else -> "Something went wrong!\nUnable to load data"
     }
 }

@@ -5,7 +5,6 @@ package com.manimarank.ptvshows.util
  */
 object AppConstants {
     const val keyTvSeriesId = "tvSeriesId"
-    const val isOnline = true
 }
 
 /**

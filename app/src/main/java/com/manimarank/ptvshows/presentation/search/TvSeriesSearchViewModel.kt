@@ -3,6 +3,7 @@ package com.manimarank.ptvshows.presentation.search
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.manimarank.ptvshows.domain.use_case.TvSeriesSearchUseCase
+import com.manimarank.ptvshows.util.NetworkManger
 import com.manimarank.ptvshows.util.Resource
 import com.manimarank.ptvshows.util.getValidPage
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,13 +19,14 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class TvSeriesSearchViewModel @Inject constructor(
-    private val tvSeriesSearchUseCase: TvSeriesSearchUseCase
+    private val tvSeriesSearchUseCase: TvSeriesSearchUseCase,
+    private val networkManger: NetworkManger
 ) : ViewModel() {
 
     private var _state = MutableStateFlow(TvSeriesSearchState())
     val state = _state.asStateFlow()
 
-    fun searchTvSeriesList(searchQuery: String, forceFetchFromRemote: Boolean, loadMore: Boolean = false) {
+    fun searchTvSeriesList(searchQuery: String, loadMore: Boolean = false) {
 
         if (!loadMore) {
             _state.update {
@@ -37,7 +39,7 @@ class TvSeriesSearchViewModel @Inject constructor(
 
         }
 
-        tvSeriesSearchUseCase(searchQuery, _state.value.page, forceFetchFromRemote = forceFetchFromRemote).onEach { result ->
+        tvSeriesSearchUseCase(searchQuery, _state.value.page, forceFetchFromRemote = networkManger.isConnected()).onEach { result ->
             when (result) {
                 is Resource.Error -> {
                     _state.update {

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,10 +21,11 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.manimarank.ptvshows.R
 
 /**
- * Component for Error message
+ * Component for Network Error and Refresh action
  */
+
 @Composable
-fun ErrorWidget(message: String? = null) {
+fun NetworkErrorWidget(message: String? = null, refresh: () -> Unit) {
     Column (
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -43,9 +45,16 @@ fun ErrorWidget(message: String? = null) {
         )
 
         Text(
-            text = message ?: stringResource(R.string.something_went_wrong),
+            text = message ?: stringResource(R.string.check_network_connection),
             modifier = Modifier.padding(8.dp),
             textAlign = TextAlign.Center
         )
+
+        Button(
+            onClick = refresh,
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(text = stringResource(R.string.refresh))
+        }
     }
 }

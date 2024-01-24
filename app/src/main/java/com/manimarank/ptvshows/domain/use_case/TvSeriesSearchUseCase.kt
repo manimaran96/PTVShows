@@ -3,7 +3,6 @@ package com.manimarank.ptvshows.domain.use_case
 import com.manimarank.ptvshows.data.mappers.toDisplayError
 import com.manimarank.ptvshows.domain.model.TvSeriesList
 import com.manimarank.ptvshows.domain.repository.TvSeriesRepository
-import com.manimarank.ptvshows.util.AppConstants
 import com.manimarank.ptvshows.util.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -18,7 +17,7 @@ class TvSeriesSearchUseCase @Inject constructor(
     operator fun invoke(searchTerm: String, page: Int, forceFetchFromRemote: Boolean = false): Flow<Resource<TvSeriesList>> = flow {
         emit(Resource.Loading(true))
         val list = try {
-            repository.searchTvSeries(searchTerm = searchTerm, page = page, forceFetchFromRemote = AppConstants.isOnline && forceFetchFromRemote)
+            repository.searchTvSeries(searchTerm = searchTerm, page = page, forceFetchFromRemote = forceFetchFromRemote)
         } catch (e: Exception) {
             e.printStackTrace()
             emit(Resource.Error(message = e.toDisplayError()))

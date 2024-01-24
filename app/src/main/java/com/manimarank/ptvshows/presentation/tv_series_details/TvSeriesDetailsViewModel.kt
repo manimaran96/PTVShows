@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.manimarank.ptvshows.domain.use_case.TvSeriesDetailsUseCase
 import com.manimarank.ptvshows.util.AppConstants
+import com.manimarank.ptvshows.util.NetworkManger
 import com.manimarank.ptvshows.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +21,8 @@ import javax.inject.Inject
 @HiltViewModel
 class TvSeriesDetailsViewModel @Inject constructor(
     private val tvSeriesDetailsUseCase: TvSeriesDetailsUseCase,
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val networkManger: NetworkManger
 ) : ViewModel() {
 
     private val tvSeriesId = savedStateHandle.get<Int>(AppConstants.keyTvSeriesId)
@@ -36,7 +38,7 @@ class TvSeriesDetailsViewModel @Inject constructor(
         _state.update {
             it.copy(isLoading = true)
         }
-        tvSeriesDetailsUseCase(seriesId = id).onEach { result ->
+        tvSeriesDetailsUseCase(seriesId = id, forceFetchFromRemote = networkManger.isConnected()).onEach { result ->
             when (result) {
                 is Resource.Error -> {
                     _state.update {

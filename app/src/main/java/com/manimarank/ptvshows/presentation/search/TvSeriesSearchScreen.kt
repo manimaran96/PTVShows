@@ -64,7 +64,7 @@ fun TvSeriesSearchScreen(
                 onSearch = { newQuery ->
                     searchActive = false
                     searchQuery = newQuery
-                    viewModel.searchTvSeriesList(searchQuery = searchQuery, true)
+                    viewModel.searchTvSeriesList(searchQuery = searchQuery)
                 },
                 placeholder = { Text(text = stringResource(R.string.search_here)) },
                 leadingIcon = {
@@ -124,7 +124,7 @@ fun TvSeriesSearchScreen(
                             Spacer(modifier = Modifier.height(16.dp))
 
                             if (index >= state.tvSeriesList.size - 1 && state.page != -1) {
-                                viewModel.searchTvSeriesList(searchQuery = searchQuery, true, loadMore = true)
+                                viewModel.searchTvSeriesList(searchQuery = searchQuery, loadMore = true)
                             }
                         }
                     }

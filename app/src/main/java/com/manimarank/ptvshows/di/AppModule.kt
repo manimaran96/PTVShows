@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.room.Room
 import com.manimarank.ptvshows.data.local.TvSeriesDatabase
 import com.manimarank.ptvshows.data.remote.TvSeriesApi
+import com.manimarank.ptvshows.util.NetworkManger
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -48,5 +49,11 @@ class AppModule {
             TvSeriesDatabase::class.java,
             "tv_series.db"
         ).build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideNetworkManager(application: Application): NetworkManger {
+        return NetworkManger(application)
     }
 }
