@@ -49,7 +49,7 @@ PTV Shows app utilizes the following technologies to deliver a smooth and effici
 
 ## Download
 
-[<img src="./files/get_in_github.png" alt='Get it on GitHub' height="80">](https://github.com/manimaran96/ptv/releases/latest)
+[<img src="./files/get_in_github.png" alt='Get it on GitHub' height="80">](https://github.com/manimaran96/PTVShows/releases)
 
 ## Demo Video
 
